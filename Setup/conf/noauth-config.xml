@@ -1,0 +1,8 @@
+<configs>
+    <config name="dummy" protocol="ssh">
+        <param name="hostname" value="localhost" />
+        <param name="port" value="22" />
+        <param name="username" value="dummy" />
+        <param name="password" value="dummy" />
+    </config>
+</configs>
