@@ -14,7 +14,7 @@
 # VARIABLES
 ERROR_LOG=/tmp/ConsoleVM_error.log
 APP_HOME=/opt/ConsoleVM
-CONF=$APP_HOME/Setup/conf
+CONF=$PWD/conf
 
 # Update OS (Centos)
 echo "######################  Updating System #################################"
