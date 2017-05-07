@@ -41,7 +41,6 @@ yum install -y tomcat nginx.x86_64
 
 
 pip3 install --upgrade pip
-pip3 install gunicorn
 pip install virtualenv
 
 
@@ -133,13 +132,32 @@ rm -rf /tmp/guacd/
 
 
 echo "######################  Gunicorn Deployment #################################"
+source $APP_HOME/venv/bin/activate
+pip3 install gunicorn
 
-
+deactivate
 
 mkdir -p $APP_HOME/run
-cp $CONF/gunicorn.service /etc/systemd/system/
+mv /etc/systemd/system/gunicorn /etc/systemd/system/gunicorn
 
+echo -e "\
+[Unit]
+Description=gunicorn daemon
+After=network.target
 
+[Service]
+# Update all paths below
+# Setting provided are for reference only !
+User=nginx
+Group=nginx
+WorkingDirectory=/opt/ConsoleVM
+ExecStart=$APP_HOME/venv/bin/gunicorn --workers 3 --bind unix:/opt/ConsoleVM/DjangoWeb/run/DjangoWeb.sock --chdir /opt/ConsoleVM/DjangoWeb DjangoWeb.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+" > /etc/systemd/system/gunicorn
+
+ 
 
 ##########################################
 #   Ngix Deployment and Configuration    #
