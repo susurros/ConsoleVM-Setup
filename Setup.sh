@@ -44,7 +44,9 @@ pip3 install --upgrade pip
 pip install virtualenv
 
 
-echo "######################  APP Deployment #################################"
+
+
+echo "######################  Virtual Env and App Deployment #################################"
 
 ## Download APP source if necesary
 git clone https://github.com/susurros/ConsoleVM.git $APP_HOME
@@ -55,6 +57,10 @@ source $APP_HOME/venv/bin/activate
 
 pip3 install Django==1.9
 pip3 install paramiko
+pip3 intall gunicorn
+
+
+echo "######################  App Setup #################################"
 
 
 ## APP Migration
@@ -71,9 +77,8 @@ echo "from console.models import VType; VType.objects.create(name='Virtual Box',
 echo "from django.core.management import call_command; call_command('collectstatic', verbosity=0, interactive=False)" | $APP_HOME/manage.py  shell
 
 
-echo "Deactivat VENV"
+
 deactivate
-echo $PWD
 
 ##############################################
 #   Guacamole Deployment and Configuration   #
@@ -132,13 +137,9 @@ rm -rf /tmp/guacd/
 
 
 echo "######################  Gunicorn Deployment #################################"
-source $APP_HOME/venv/bin/activate
-pip3 install gunicorn
-
-deactivate
 
 mkdir -p $APP_HOME/run
-mv /etc/systemd/system/gunicorn /etc/systemd/system/gunicorn
+mv /etc/systemd/system/gunicorn /etc/systemd/system/gunicorn.service
 
 echo -e "\
 [Unit]
@@ -155,6 +156,8 @@ ExecStart=$APP_HOME/venv/bin/gunicorn --workers 3 --bind unix:/opt/ConsoleVM/Dja
 
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/gunicorn
+
+systemctl daemons-reload
 
  
 
