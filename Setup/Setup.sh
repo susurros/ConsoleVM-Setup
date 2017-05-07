@@ -55,7 +55,7 @@ pip3 install paramiko
 
 
 ## Download APP source if necesary
-git clone -b Release_0.1 https://github.com/susurros/DjangoWeb.git $APP_HOME
+git clone https://github.com/susurros/ConsoleVM.git $APP_HOME
 
 ## APP Migration
 $APP_HOME/manage.py migrate
