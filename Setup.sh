@@ -33,15 +33,19 @@ yum install -y bison byacc cscope ctags diffstat doxygen flex gcc gcc-c++ gcc-gf
 #   APP Deployment and Configuration   #
 ########################################
 
-echo "######################  APP Deployment #################################"
+
 
 ## Install Required Sofware
 yum install -y  python34-pip.noarch python34 git openssl-devel libffi-devel python34-devel zlib-devel bzip2-devel sqlite sqlite-devel openssl-devel
-
+yum install -y tomcat nginx.x86_64
 
 
 pip3 install --upgrade pip
+pip3 install gunicorn
 pip install virtualenv
+
+
+echo "######################  APP Deployment #################################"
 
 ## Download APP source if necesary
 git clone https://github.com/susurros/ConsoleVM.git $APP_HOME
@@ -132,10 +136,7 @@ echo "######################  Gunicorn Deployment ##############################
 
 
 
-## Install Required Software
-
 mkdir -p $APP_HOME/run
-/usr/bin/pip3 install gunicorn
 cp $CONF/gunicorn.service /etc/systemd/system/
 
 
@@ -147,9 +148,6 @@ cp $CONF/gunicorn.service /etc/systemd/system/
 
 echo "######################  Nginx Deployment #################################"
 
-
-## Install Required Software
-yum install -y tomcat nginx.x86_64
 
 ## Create SSL Dir
 mkdir /etc/nginx/ssl
