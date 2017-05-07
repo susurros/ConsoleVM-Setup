@@ -154,8 +154,7 @@ WorkingDirectory=/opt/ConsoleVM
 ExecStart=$APP_HOME/venv/bin/gunicorn --workers 3 --bind unix:/opt/ConsoleVM/DjangoWeb/run/DjangoWeb.sock --chdir /opt/ConsoleVM/DjangoWeb DjangoWeb.wsgi:application
 
 [Install]
-WantedBy=multi-user.target
-" > /etc/systemd/system/gunicorn
+WantedBy=multi-user.target" > /etc/systemd/system/gunicorn
 
  
 
