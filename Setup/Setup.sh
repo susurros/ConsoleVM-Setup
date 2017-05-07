@@ -135,6 +135,7 @@ echo "######################  Gunicorn Deployment ##############################
 
 ## Install Required Software
 
+mkdir -p $APP/run
 pip3 install gunicorn
 cp $CONF/gunicorn.service etc/systemd/system/
 
@@ -162,6 +163,8 @@ openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 rm -f /etc/nginx/nginx.conf
 cp $CONF/nginx.conf /etc/nginx/
 
+mkdir -p $APP/secret
+
 
 ###############################
 #  Firewalld Configure Rules  #
@@ -169,7 +172,7 @@ cp $CONF/nginx.conf /etc/nginx/
 
 firewall-cmd --add-service=https
 firewall-cmd --runtime-to-permanent
-
+systemctl restart firewalld 
 
 ##########################
 #     Start Services     #
