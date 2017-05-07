@@ -43,6 +43,9 @@ yum install -y  python34-pip.noarch python34 git openssl-devel libffi-devel pyth
 pip3 install --upgrade pip
 pip install virtualenv
 
+## Download APP source if necesary
+git clone https://github.com/susurros/ConsoleVM.git $APP_HOME
+
 ## Create Virtualenv
 virtualenv -p python3 $APP_HOME/venv
 source $APP_HOME/venv/bin/activate
@@ -50,8 +53,6 @@ source $APP_HOME/venv/bin/activate
 pip3 install Django==1.9
 pip3 install paramiko
 
-## Download APP source if necesary
-git clone https://github.com/susurros/ConsoleVM.git $APP_HOME
 
 ## APP Migration
 $APP_HOME/manage.py migrate
