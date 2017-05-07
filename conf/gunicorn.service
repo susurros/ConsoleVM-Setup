@@ -8,7 +8,7 @@ After=network.target
 User=nginx
 Group=nginx
 WorkingDirectory=/opt/ConsoleVM
-ExecStart=/usr/bin/gunicorn --workers 3 --bind unix:/opt/ConsoleVM/DjangoWeb/run/DjangoWeb.sock --chdir /opt/ConsoleVM/DjangoWeb DjangoWeb.wsgi:application
+ExecStart=GBINARY --workers 3 --bind unix:/opt/ConsoleVM/DjangoWeb/run/DjangoWeb.sock --chdir /opt/ConsoleVM/DjangoWeb DjangoWeb.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
