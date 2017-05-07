@@ -135,8 +135,8 @@ echo "######################  Gunicorn Deployment ##############################
 ## Install Required Software
 
 mkdir -p $APP_HOME/run
-pip3 install gunicorn
-cp $CONF/gunicorn.service etc/systemd/system/
+/usr/bin/pip3 install gunicorn
+cp $CONF/gunicorn.service /etc/systemd/system/
 
 
 
