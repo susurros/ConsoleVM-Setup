@@ -68,7 +68,9 @@ echo "from console.models import VType; VType.objects.create(name='Virtual Box',
 echo "from django.core.management import call_command; call_command('collectstatic', verbosity=0, interactive=False)" | $APP_HOME/manage.py  shell
 
 
-$APP_HOME/venv/bin/deactivate
+echo "Deactivat VENV"
+deactivate
+echo $PWD
 
 ##############################################
 #   Guacamole Deployment and Configuration   #
