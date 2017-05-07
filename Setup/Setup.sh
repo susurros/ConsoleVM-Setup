@@ -135,7 +135,7 @@ echo "######################  Gunicorn Deployment ##############################
 
 ## Install Required Software
 
-mkdir -p $APP/run
+mkdir -p $APP_HOME/run
 pip3 install gunicorn
 cp $CONF/gunicorn.service etc/systemd/system/
 
@@ -163,7 +163,7 @@ openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 rm -f /etc/nginx/nginx.conf
 cp $CONF/nginx.conf /etc/nginx/
 
-mkdir -p $APP/secret
+mkdir -p $APP_HOME/secret
 
 
 ###############################
