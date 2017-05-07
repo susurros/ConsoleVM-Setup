@@ -57,7 +57,7 @@ source $APP_HOME/venv/bin/activate
 
 pip3 install Django==1.9
 pip3 install paramiko
-pip3 intall gunicorn
+pip3 install gunicorn
 
 
 echo "######################  App Setup #################################"
