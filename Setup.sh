@@ -152,10 +152,10 @@ After=network.target
 User=nginx
 Group=nginx
 WorkingDirectory=/opt/ConsoleVM
-ExecStart=$APP_HOME/venv/bin/gunicorn --workers 3 --bind unix:/opt/ConsoleVM/DjangoWeb/run/DjangoWeb.sock --chdir /opt/ConsoleVM/DjangoWeb DjangoWeb.wsgi:application
+ExecStart=$APP_HOME/venv/bin/gunicorn --workers 3 --bind unix:$APP_HOME/run/DjangoWeb.sock --chdir $APP_HOME DjangoWeb.wsgi:application
 
 [Install]
-WantedBy=multi-user.target" > /etc/systemd/system/gunicorn
+WantedBy=multi-user.target" > /etc/systemd/system/gunicorn.service
 
 systemctl daemons-reload
 
@@ -178,9 +178,111 @@ openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
 
 ## Replace Ngix configuration file
 rm -f /etc/nginx/nginx.conf
-cp $CONF/nginx.conf /etc/nginx/
+
+echo -e "\
+ # For more information on configuration, see:
+#   * Official English Documentation: http://nginx.org/en/docs/
+#   * Official Russian Documentation: http://nginx.org/ru/docs/
+
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+# Load dynamic modules. See /usr/share/nginx/README.dynamic.
+include /usr/share/nginx/modules/*.conf;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    # Load modular configuration files from the /etc/nginx/conf.d directory.
+    # See http://nginx.org/en/docs/ngx_core_module.html#include
+    # for more information.
+    include /etc/nginx/conf.d/*.conf;
+
+    server {
+        listen 443 http2 ssl;
+        listen [::]:443 http2 ssl;
+
+        #server_name ;
+
+        ssl_certificate /etc/nginx/ssl/nginx-selfsigned.crt;
+        ssl_certificate_key /etc/nginx/ssl/nginx-selfsigned.key;
+        ssl_dhparam /etc/nginx/ssl/dhparam.pem;
+
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
+
+        index index.php index.html index.htm;
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+
+        # serve static content
+        location /static {
+               # Update correct static folder path
+                root $APP_HOME;
+        }
+
+        location / {
+            auth_basic "Restricted Content";
+            auth_basic_user_file $APP_HOME/secret/nginx.pass;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # use the sock created in above gunicorn file
+            proxy_pass http://unix:$APP_HOME/run/DjangoWeb.sock;
+        }
+
+        location /guacamole/ {
+            proxy_pass http://127.0.0.1:8080/guacamole/;
+            proxy_buffering off;
+            proxy_http_version 1.1;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $http_connection;
+            access_log off;
+        }
+
+    }
+}" >> /etc/nginx/nginx.conf
+
+
 
 mkdir -p $APP_HOME/secret
+
+
+
+echo "Plesae write a user for the nginx authentication, followed by [ENTER]:"
+read http_user
+sh -c "echo -n '$http_user:' >> $APP_HOME/secret/nginx.pass"
+echo "Please write the password for the nginx authentication, followed by [ENTER]:"
+sh -c "openssl passwd -apr1 >> $APP_HOME/secret/nginx.pass"
+
+
+###############################
+#  Generate SSL Private Key   #
+###############################
+
+ssh-keygen -f $APP_HOME/secret/labkey -t rsa -N ''
 
 
 ###############################
